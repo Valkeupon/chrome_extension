@@ -8,13 +8,13 @@ let input = document.getElementById('inputValue');
 
 const console = function(params) {
   if(chrome && chrome.runtime) {
-    chrome.runtime.sendMessage(params);
+    chrome.runtime.sendMessage({ type: "log", content: params });
   }
 }
 
 changeValue.onclick = function(element) {
     let value = input.value;
-    console(value); 
+    chrome.runtime.sendMessage({ type: "created", content: value });
     // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     //   chrome.tabs.executeScript(
     //       tabs[0].id,

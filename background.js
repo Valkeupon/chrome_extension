@@ -12,9 +12,17 @@ chrome.runtime.onInstalled.addListener(function() {
       }]);
     });
 
-    //DEBUGGING
+
     const onMessageListener = function(message, sender, sendResponse) {
-      console.log(message);
+      //DEBUGGING
+      if(message.type == "log"){
+        console.log(message.content);
+      }
+      //CREATED
+      if(message.type == "created"){
+        alert(message.content);
+        //executeScript
+      }
     }
     chrome.runtime.onMessage.addListener(onMessageListener);
  });
