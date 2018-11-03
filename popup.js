@@ -1,6 +1,6 @@
 let changeValue = document.getElementById('addValue');
 let input = document.getElementById('inputValue');
-chrome.runtime.sendMessage({ type: "get" }, (res) => {
+chrome.runtime.sendMessage({ type: "get" }, function(res){
   console(res);
 });
 // chrome.storage.sync.get('color', function(data) {

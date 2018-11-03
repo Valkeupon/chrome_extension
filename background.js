@@ -28,7 +28,7 @@ chrome.runtime.onInstalled.addListener(function() {
     });
 
 
-    const onMessageListener = function(message, sender, sendResponse) {
+    const onMessageListener = function(message, sendResponse) {
       //DEBUGGING
       if(message.type == "log"){
         console.log(message.content);
@@ -51,20 +51,24 @@ chrome.runtime.onInstalled.addListener(function() {
       }
 
       if(message.type == "get"){
-        const messages = [];
         db.collection("messages").get().then(function(elem){
+          let messages = [];
           if(!elem){
             messages = null;
+            return;
           }
           elem.forEach((doc) => {
             const message = doc.data();
             messages.push(message.content);
           });
+          console.log(messages);
+          if(!messages || messages.length <= 0){
+            return;
+          }
+          //return sendResponse(messages);
         }).catch(function(error) {
             console.log("Error getting document:", error);
         });
-        console.log(messages);
-        return sendResponse(messages);
       }
 
     }
