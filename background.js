@@ -12,6 +12,72 @@ db.settings({
   timestampsInSnapshots: true
 });
 
+const httpGet = function(url) {
+  const xmlHttp = new XMLHttpRequest();
+  const theUrl = 'https://getmeta.info/json?url='+ url;
+  xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+  xmlHttp.send( null );
+  return xmlHttp.responseText;
+}
+
+chrome.extension.onConnect.addListener(function (port) {
+    port.onMessage.addListener(function (message) {
+        //GET
+        if (message.type == "get") {
+          db.collection("messages").limit(3).orderBy("createdAt", "desc").get().then(function(elem) {
+            let messages = [];
+            if(!elem) {
+              messages = null;
+              return;
+            }
+            elem.forEach((doc) => {
+              const message = doc.data();
+              messages.push(message);
+            });
+
+            messages.sort(function(a, b) {
+              if (a.createdAt < b.createdAt) {
+                return -1;
+              }
+              if (a.createdAt > b.createdAt) {
+                return 1;
+              }
+              return 0;
+            });
+
+            port.postMessage(messages);
+          }).catch(function(error) {
+              console.log("Error getting document:", error);
+          });
+        }
+        //CREATED
+        if(message.type == "created") {
+          if(!message.content){
+            sendResponse({ type: "error", content: "Aucun message" });
+            return;
+          }
+
+          let infos = httpGet(message.content);
+          if(!infos) {
+            return;
+          }
+
+          infos = JSON.parse(infos);
+          db.collection("messages").add({
+              title: infos.title,
+              content: message.content,
+              createdAt: new Date().getTime()
+          })
+          .then(function(doc) {
+             port.postMessage({ created: true });
+          })
+          .catch(function(error) {
+              console.error("Error adding document: ", error);
+          });
+        }
+    });
+});
+
 chrome.runtime.onInstalled.addListener(function() {
    // chrome.storage.sync.set(messages, function() {
    //   console.log("The color is green.");
@@ -27,50 +93,11 @@ chrome.runtime.onInstalled.addListener(function() {
       }]);
     });
 
-
     const onMessageListener = function(message, sendResponse) {
       //DEBUGGING
       if(message.type == "log"){
         console.log(message.content);
       }
-      //CREATED
-      if(message.type == "created"){
-        if(!message.content){
-          sendResponse({ type: "error", content: "Aucun message" });
-          return;
-        }
-        db.collection("messages").add({
-            content: message.content
-        })
-        .then(function(docRef) {
-            console.log("Document written with ID: ", docRef.id);
-        })
-        .catch(function(error) {
-            console.error("Error adding document: ", error);
-        });
-      }
-
-      if(message.type == "get"){
-        db.collection("messages").get().then(function(elem){
-          let messages = [];
-          if(!elem){
-            messages = null;
-            return;
-          }
-          elem.forEach((doc) => {
-            const message = doc.data();
-            messages.push(message.content);
-          });
-          console.log(messages);
-          if(!messages || messages.length <= 0){
-            return;
-          }
-          //return sendResponse(messages);
-        }).catch(function(error) {
-            console.log("Error getting document:", error);
-        });
-      }
-
-    }
+    };
     chrome.runtime.onMessage.addListener(onMessageListener);
 });
