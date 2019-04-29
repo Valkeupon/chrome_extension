@@ -1,13 +1,15 @@
-let changeValue = document.getElementById('addValue');
-let input = document.getElementById('inputValue');
-let list = document.querySelector('.link .link_content');
-let notifs = document.querySelector('.notifs');
+const changeValue = document.getElementById('addValue');
+const input = document.getElementById('inputValue');
+const list = document.querySelector('.link .link_content');
+const notifs = document.querySelector('.notifs');
+const child = document.querySelector(".wrapper");
 
 const port = chrome.extension.connect({
     name: "Sample Communication"
 });
 port.postMessage({type: "get"});
 port.onMessage.addListener(function (content) {
+  list.removeChild(child);
   if(content.created) {
     return notifs.innerHTML = "<div>Message envoyé</div>";
   }

@@ -64,3 +64,62 @@ li:nth-child(4n+2) {
 li:last-child {
   background-color: #4ECDC4;
 }
+
+/* background-color: #abe9cd;
+background-image: linear-gradient(315deg, #abe9cd 0%, #3eadcf 74%); */
+
+/*Animation load */
+.wrapper {
+  margin: 10px;
+  padding: 10px;
+  background: #fff;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper-cell {
+  display: flex;
+  margin-bottom: 30px;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -500px 0;
+  }
+  100% {
+    background-position: 500px 0;
+  }
+}
+
+.animated-background {
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #f6f6f6;
+  background: linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%);
+  background-size: 800px 104px;
+  height: 96px;
+  position: relative;
+}
+
+.text {
+  margin-left: 20px;
+}
+
+.text-line {
+  height: 10px;
+  width: 230px;
+  margin: 4px 0;
+	animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background: #f6f6f6;
+  background: linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%);
+  background-size: 800px 104px;
+  position: relative;
+}
